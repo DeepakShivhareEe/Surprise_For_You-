@@ -1,17 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { CONFIG } from '../config';
+import { initMouseParallax, initTiltParallax, initTouchParallax } from '../utils/cinematicEffects';
 
 const NicknameReveal = ({ nickname }) => {
   const [showConfetti, setShowConfetti] = useState(false);
+  const containerRef = useRef(null);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
     // Trigger confetti after component mounts
     setTimeout(() => setShowConfetti(true), 500);
   }, []);
 
+  // Initialize parallax effects
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const isDesktop = window.innerWidth > 768;
+    
+    if (isDesktop) {
+      cleanupRef.current = initMouseParallax(container, 8);
+    } else {
+      const tiltCleanup = initTiltParallax(container, 12);
+      if (tiltCleanup) {
+        cleanupRef.current = tiltCleanup;
+      } else {
+        cleanupRef.current = initTouchParallax(container, 12);
+      }
+    }
+
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, []);
+
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -24,7 +53,8 @@ const NicknameReveal = ({ nickname }) => {
         textAlign: 'center',
         width: '90%',
         maxWidth: '800px',
-        zIndex: 15
+        zIndex: 15,
+        willChange: 'transform, opacity'
       }}
     >
       {/* Sparkle Burst */}

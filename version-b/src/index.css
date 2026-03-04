@@ -28,3 +28,203 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* =====================================
+   🎬 CINEMATIC PREMIUM ANIMATIONS
+   ===================================== */
+
+/* Subtle breathing effect for text */
+.cinematic-text {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Light sweep effect across text */
+.cinematic-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  animation: lightSweep 6s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+@keyframes lightSweep {
+  0%, 100% {
+    left: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Depth layering with z-index */
+.depth-layer-0 {
+  z-index: 0;
+}
+
+.depth-layer-1 {
+  z-index: 1;
+}
+
+.depth-layer-10 {
+  z-index: 10;
+}
+
+.depth-layer-20 {
+  z-index: 20;
+}
+
+/* Performance optimization for animated elements */
+.cinematic-text,
+.cinematic-ripple,
+[class*='cinematic-'] {
+  will-change: transform, opacity;
+}
+
+/* Ensure smooth 60fps animations */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .cinematic-text::before {
+    display: none;
+  }
+}
+
+/* =====================================
+   PREMIUM VISUAL POLISH
+   ===================================== */
+
+/* Subtle vignette overlay - already in App but keeping for reference */
+.vignette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Smooth gradient animation for backgrounds */
+@keyframes darkGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Ultra-smooth transitions */
+.smooth-transition {
+  transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Luxury hover effect (for interactive elements) */
+.luxury-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.luxury-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass morphism effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+/* Text shimmer effect */
+@keyframes textShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 3s linear infinite;
+}
+
+/* =====================================
+   RESPONSIVE OPTIMIZATIONS
+   ===================================== */
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .cinematic-text {
+    font-size: clamp(1.2rem, 5vw, 2rem) !important;
+    padding: 0.5rem;
+  }
+  
+  /* Reduce animation complexity on mobile for performance */
+  .cinematic-text::before {
+    animation-duration: 8s;
+  }
+}
+
+/* High-resolution display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .cinematic-text {
+    text-rendering: optimizeLegibility;
+  }
+}
+

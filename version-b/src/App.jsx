@@ -44,17 +44,19 @@ function App() {
   const startExperience = async (name) => {
     setUserName(name);
     
-    // Start music (skip first 20 seconds)
+    // Start music after 2 seconds (skip first 40 seconds)
     if (CONFIG.songFileURL && audioRef.current) {
-      try {
-        audioRef.current.currentTime = 20; // Skip first 20 seconds
-        audioRef.current.volume = 0;
-        await audioRef.current.play();
-        fadeInAudio();
-        setIsPlaying(true);
-      } catch (error) {
-        console.log('Autoplay prevented');
-      }
+      setTimeout(async () => {
+        try {
+          audioRef.current.currentTime = 40; // Skip first 40 seconds
+          audioRef.current.volume = 0;
+          await audioRef.current.play();
+          fadeInAudio();
+          setIsPlaying(true);
+        } catch (error) {
+          console.log('Autoplay prevented');
+        }
+      }, 2000); // Wait 2 seconds before playing
     }
     
     // Stage sequence with timing
@@ -90,14 +92,20 @@ function App() {
   const handleExperienceClick = (e) => {
     if (stage === STAGES.LANDING) return;
     if (e.target.closest('.music-toggle')) return;
+    // Don't trigger click surprise during MESSAGES stage (handled by MessageSequence)
+    if (stage === STAGES.MESSAGES) return;
+    // Don't trigger click surprise during FINAL stage (cinematic ending)
+    if (stage === STAGES.FINAL) return;
     
     setClickPosition({ x: e.clientX, y: e.clientY });
   };
 
   return (
     <div className="app" onClick={handleExperienceClick} style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      {/* Particle Background */}
-      <ParticleBackground />
+      {/* Particle Background - Depth Layer 0 */}
+      <div style={{ zIndex: 0 }}>
+        <ParticleBackground />
+      </div>
       
       {/* Audio Element */}
       {CONFIG.songFileURL && (
@@ -131,7 +139,7 @@ function App() {
           animation: 'darkGradient 20s ease infinite',
           zIndex: 5
         }}>
-          {/* Vignette overlay */}
+          {/* Vignette overlay - Depth Layer 1 */}
           <div style={{
             position: 'absolute',
             top: 0,
@@ -140,7 +148,7 @@ function App() {
             bottom: 0,
             background: 'radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)',
             pointerEvents: 'none',
-            zIndex: 2
+            zIndex: 1
           }} />
           
           {/* Floating Hearts */}
