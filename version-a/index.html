@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise 💖</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Particle Background -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Ethereal Cloud Layers (Behind Content) -->
+    <div class="cloud-container">
+        <div class="cloud-layer cloud-layer-1"></div>
+        <div class="cloud-layer cloud-layer-2"></div>
+        <div class="cloud-layer cloud-layer-3"></div>
+    </div>
+
+    <!-- Dynamic Message Background Layer -->
+    <div id="dynamicBgLayer" class="dynamic-bg-layer"></div>
+
+    <!-- Landing Page -->
+    <div id="landingPage" class="page active">
+        <div class="landing-content">
+            <h1 class="landing-title">Something Special Awaits ✨</h1>
+            <div class="input-card">
+                <label for="nameInput">Enter Your Name</label>
+                <input type="text" id="nameInput" placeholder="Type here..." autocomplete="off">
+                <button id="submitBtn" class="submit-btn">
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experience Page -->
+    <div id="experiencePage" class="page">
+        <!-- Floating Hearts Container -->
+        <div id="heartsContainer"></div>
+        
+        <!-- Confetti Container -->
+        <div id="confettiContainer"></div>
+
+        <!-- Nickname Reveal -->
+        <div id="nicknameReveal" class="content-section">
+            <h2 id="nicknameText" class="nickname-text"></h2>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messagesContainer" class="content-section">
+            <p id="messageText" class="message-text"></p>
+        </div>
+
+        <!-- Inside Joke -->
+        <div id="insideJoke" class="content-section">
+            <p id="jokeText" class="joke-text"></p>
+        </div>
+
+        <!-- Cinematic Final Quote Scene -->
+        <div id="finalScene" class="content-section final-quote-scene">
+            <div class="quote-container">
+                <p class="quote-line" data-line="1">In this little universe of moments,</p>
+                <p class="quote-line" data-line="2">you are one of the brightest stars.</p>
+                <p class="quote-line quote-spacer" data-line="3">May your path be filled with success,</p>
+                <p class="quote-line" data-line="4">your heart filled with peace,</p>
+                <p class="quote-line" data-line="5">and your days filled with genuine happiness.</p>
+                <p class="quote-line quote-spacer" data-line="6">Never forget how special you are.</p>
+                <p class="quote-signature" data-line="7">With best wishes,<br><span class="signature-name">Deepak Shivhare ✨</span></p>
+            </div>
+        </div>
+
+        <!-- Click Surprise -->
+        <div id="clickSurprise" class="click-surprise"></div>
+    </div>
+
+    <!-- Music Toggle Button -->
+    <button id="musicToggle" class="music-toggle" style="display: none;">
+        <span class="music-icon">🎵</span>
+    </button>
+
+    <!-- Hidden Audio Element -->
+    <audio id="bgMusic" loop>
+        <!-- Music will be loaded from config -->
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
