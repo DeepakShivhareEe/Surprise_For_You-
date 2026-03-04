@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { initMouseParallax, initTiltParallax, initTouchParallax } from '../utils/cinematicEffects';
 
-const FinalScene = () => {
+const FinalScene = ({ onFadeMusic }) => {
   const [showSparkles, setShowSparkles] = useState([]);
-  const [cinematicPhase, setCinematicPhase] = useState(0); // 0: quotes, 1: transform, 2: zoom, 3: signature, 4: freeze
+  const [cinematicPhase, setCinematicPhase] = useState(0); // 0: quotes, 1: transform, 2: zoom, 3: signature, 4: freeze, 5: end
   const containerRef = useRef(null);
   const cleanupRef = useRef(null);
   const sparkleIntervalRef = useRef(null);
@@ -38,6 +38,14 @@ const FinalScene = () => {
       
       setShowSparkles(prev => [...prev.slice(-15), newSparkle]);
     };
+
+    // Stop sparkles in Phase 5
+    if (cinematicPhase >= 5) {
+      if (sparkleIntervalRef.current) {
+        clearInterval(sparkleIntervalRef.current);
+      }
+      return;
+    }
 
     // Adjust interval based on phase
     const interval = cinematicPhase >= 1 ? 800 : 400;
@@ -74,8 +82,17 @@ const FinalScene = () => {
       setCinematicPhase(4);
     }, (quoteDuration + 2.5 + 6 + 3) * 1000));
 
+    // Phase 5: Cinematic end (5s after Phase 4)
+    timers.push(setTimeout(() => {
+      setCinematicPhase(5);
+      // Trigger music fade
+      if (onFadeMusic) {
+        onFadeMusic();
+      }
+    }, (quoteDuration + 2.5 + 6 + 3 + 5) * 1000));
+
     return () => timers.forEach(timer => clearTimeout(timer));
-  }, [quoteDuration]);
+  }, [quoteDuration, onFadeMusic]);
 
   // Initialize parallax effects
   useEffect(() => {
@@ -197,9 +214,30 @@ const FinalScene = () => {
       )}
 
       {/* ============================================
-          FLOATING SPARKLES (slower in Phase 1+)
+          PHASE 5: FADE TO BLACK OVERLAY
           ============================================ */}
-      {showSparkles.map(sparkle => (
+      {cinematicPhase >= 5 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, ease: 'easeInOut' }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: '#000',
+            zIndex: 50,
+            pointerEvents: 'all'
+          }}
+        />
+      )}
+
+      {/* ============================================
+          FLOATING SPARKLES (slower in Phase 1+, stop in Phase 5)
+          ============================================ */}
+      {cinematicPhase < 5 && showSparkles.map(sparkle => (
         <motion.div
           key={sparkle.id}
           initial={{ opacity: 0, y: 0 }}
@@ -228,32 +266,34 @@ const FinalScene = () => {
       ))}
 
       {/* ============================================
-          GOLDEN PARTICLES EFFECT
+          GOLDEN PARTICLES EFFECT (stops in Phase 5)
           ============================================ */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        transition={{ duration: 2, delay: 1 }}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `
-            radial-gradient(2px 2px at 20% 30%, rgba(255, 215, 0, 0.3), transparent),
-            radial-gradient(2px 2px at 60% 70%, rgba(255, 215, 0, 0.3), transparent),
-            radial-gradient(1px 1px at 50% 50%, rgba(255, 215, 0, 0.3), transparent),
-            radial-gradient(1px 1px at 80% 10%, rgba(255, 215, 0, 0.3), transparent),
-            radial-gradient(2px 2px at 90% 60%, rgba(255, 215, 0, 0.3), transparent),
-            radial-gradient(1px 1px at 33% 80%, rgba(255, 215, 0, 0.3), transparent)
-          `,
-          backgroundSize: '200% 200%',
-          animation: 'goldenParticles 8s ease-in-out infinite',
-          zIndex: 15,
-          pointerEvents: 'none'
-        }}
-      />
+      {cinematicPhase < 5 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ duration: 2, delay: 1 }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: `
+              radial-gradient(2px 2px at 20% 30%, rgba(255, 215, 0, 0.3), transparent),
+              radial-gradient(2px 2px at 60% 70%, rgba(255, 215, 0, 0.3), transparent),
+              radial-gradient(1px 1px at 50% 50%, rgba(255, 215, 0, 0.3), transparent),
+              radial-gradient(1px 1px at 80% 10%, rgba(255, 215, 0, 0.3), transparent),
+              radial-gradient(2px 2px at 90% 60%, rgba(255, 215, 0, 0.3), transparent),
+              radial-gradient(1px 1px at 33% 80%, rgba(255, 215, 0, 0.3), transparent)
+            `,
+            backgroundSize: '200% 200%',
+            animation: 'goldenParticles 8s ease-in-out infinite',
+            zIndex: 15,
+            pointerEvents: 'none'
+          }}
+        />
+      )}
 
       {/* ============================================
           PHASE 2: CINEMATIC ZOOM CONTAINER
@@ -346,10 +386,11 @@ const FinalScene = () => {
             "With best wishes, Deepak Shivhare ✨"
             ============================================ */}
         <AnimatePresence>
-          {cinematicPhase >= 3 && (
+          {cinematicPhase >= 3 && cinematicPhase < 5 && (
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: cinematicPhase >= 5 ? 0 : 1 }}
+              exit={{ opacity: 0, transition: { duration: 1 } }}
               style={{
                 position: 'fixed',
                 top: '50%',
@@ -422,7 +463,7 @@ const FinalScene = () => {
                   transition={{
                     opacity: { duration: 0.8, delay: 2 },
                     y: { duration: 1, delay: 2, ease: [0.4, 0.0, 0.2, 1] },
-                    scale: cinematicPhase >= 4 ? {
+                    scale: cinematicPhase >= 4 && cinematicPhase < 5 ? {
                       duration: 4,
                       repeat: Infinity,
                       ease: 'easeInOut'
@@ -507,7 +548,7 @@ const FinalScene = () => {
                 }}
                 transition={{
                   width: { duration: 1.2, delay: 3, ease: 'easeInOut' },
-                  opacity: cinematicPhase >= 4 ? {
+                  opacity: cinematicPhase >= 4 && cinematicPhase < 5 ? {
                     duration: 4,
                     repeat: Infinity,
                     ease: 'easeInOut'
@@ -523,8 +564,8 @@ const FinalScene = () => {
                 }}
               />
 
-              {/* Additional sparkles around signature (Phase 4) */}
-              {cinematicPhase >= 4 && (
+              {/* Additional sparkles around signature (Phase 4 only, not Phase 5) */}
+              {cinematicPhase >= 4 && cinematicPhase < 5 && (
                 <>
                   {[...Array(6)].map((_, i) => {
                     const positions = [
@@ -566,6 +607,53 @@ const FinalScene = () => {
                   })}
                 </>
               )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ============================================
+            PHASE 5: "THE END" MESSAGE
+            ============================================ */}
+        <AnimatePresence>
+          {cinematicPhase >= 5 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, delay: 1.5 }}
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                zIndex: 60,
+                pointerEvents: 'none'
+              }}
+            >
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 2,
+                  delay: 2,
+                  ease: [0.4, 0.0, 0.2, 1]
+                }}
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 'clamp(2rem, 5vw, 3rem)',
+                  fontWeight: 400,
+                  fontStyle: 'italic',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  letterSpacing: '0.1em',
+                  textShadow: `
+                    0 0 20px rgba(255, 255, 255, 0.3),
+                    0 2px 10px rgba(0, 0, 0, 0.8)
+                  `
+                }}
+              >
+                The End ✨
+              </motion.h2>
             </motion.div>
           )}
         </AnimatePresence>

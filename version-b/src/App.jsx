@@ -88,6 +88,23 @@ function App() {
     setIsPlaying(!isPlaying);
   };
 
+  // Fade music to 0 over 2 seconds (for cinematic ending)
+  const fadeMusic = () => {
+    if (!audioRef.current) return;
+    
+    const fadeInterval = setInterval(() => {
+      if (audioRef.current && audioRef.current.volume > 0.02) {
+        audioRef.current.volume = Math.max(audioRef.current.volume - 0.02, 0);
+      } else {
+        if (audioRef.current) {
+          audioRef.current.volume = 0;
+          audioRef.current.pause();
+        }
+        clearInterval(fadeInterval);
+      }
+    }, 40); // 40ms * 50 iterations = 2000ms (2 seconds)
+  };
+
   // Handle click surprise
   const handleExperienceClick = (e) => {
     if (stage === STAGES.LANDING) return;
@@ -169,7 +186,7 @@ function App() {
             )}
             
             {stage === STAGES.FINAL && (
-              <FinalScene key="final" />
+              <FinalScene key="final" onFadeMusic={fadeMusic} />
             )}
           </AnimatePresence>
           
